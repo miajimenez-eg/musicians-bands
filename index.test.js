@@ -14,11 +14,21 @@ describe('Band and Musician Models', () => {
 
     test('can create a Band', async () => {
         // TODO - test creating a band
-        expect('NO TEST').toBe('EXPECTED VALUE HERE');
+        // create new band
+        const newBand = await Band.create({name: 'The Beatles', genre: 'Rock'});
+        // select the band from the database and check properties
+        const selectBand = await Band.findByPk(newBand.id);
+        expect(selectBand.name).toBe('The Beatles');
+        expect(selectBand.genre).toBe('Rock');
     })
 
     test('can create a Musician', async () => {
         // TODO - test creating a musician
-        expect('NO TEST').toBe('EXPECTED VALUE HERE');
+        // create new musician
+        const newMusician = await Musician.create({name: 'Lizzo', instrument: 'Flute'});
+        // Select musician from the database and check properties
+        const selectMusician = await Musician.findByPk(newMusician.id);
+        expect(selectMusician.name).toBe('Lizzo');
+        expect(selectMusician.instrument).toBe('Flute');
     })
 })
