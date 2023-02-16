@@ -111,5 +111,67 @@ describe('Band and Musician Models', () => {
         expect(findSong.title).toBe('Cardboard Box');
         expect(findSong.year).toBe(2021);
     })
+
+    test('can add multiple songs to a band', async () => {
+        // create band
+        const newBand = await Band.create({name: 'Flo', genre: 'RnB', showCount: 52});
+        // create songs
+        const newSong1 = await Song.create({title: 'Cardboard Box', year: 2021});
+        const newSong2 = await Song.create({title: 'Summertime', year: 2021});
+        const newSong3 = await Song.create({title: 'Feature Me', year: 2021});
+        // add songs to band
+        await newBand.addSong(newSong1);
+        await newBand.addSong(newSong2);
+        await newBand.addSong(newSong3);
+        const bandSongs = await Song.findAll( { where: { bandId: newBand.id } } );
+        expect(bandSongs[0].title).toBe('Cardboard Box');
+        expect(bandSongs[1].title).toBe('Summertime');
+        expect(bandSongs[2].title).toBe('Feature Me');
+    })
+
+    test('eager loading works', async () => {
+        // create band1
+        const band1 = await Band.create({name: 'Flo', genre: 'RnB', showCount: 52});
+        // get bands from db
+        const findBand1 = await Band.findByPk(4);
+        // create some musicians
+        const newMusician1 = await Musician.create({name: 'Stella Quaresma', instrument: 'Voice'});
+        const newMusician2 = await Musician.create({name: 'Jorja Douglas', instrument: 'Voice'});
+        const newMusician3 = await Musician.create({name: 'Renee Downer', instrument: 'Voice'});
+        // add musicians to band1
+        await band1.addMusician(newMusician1);
+        await band1.addMusician(newMusician2);
+        await band1.addMusician(newMusician3);
+        // create band2
+        const band2 = await Band.create({name: 'Little Mix', genre: 'Pop', showCount: 200});
+        // create some songs
+        const newSong1 = await Song.create({title: 'Wasabi', year: 2020});
+        const newSong2 = await Song.create({title: 'Sweet Melody', year: 2021});
+        // add songs to band2
+        await band2.addSong(newSong1);
+        await band2.addSong(newSong2);
+        // find all the bands
+        const bands = await Band.findAll();
+        const bandsWithMusicians = await Band.findAll({
+            include: [
+                {
+                    model: Musician, as: "musicians"
+                }
+            ]
+        });
+        const bandsWithSongs = await Band.findAll({
+            include: [
+                {
+                    model: Song, as: "songs"
+                }
+            ]
+        });
+        console.log(bandsWithMusicians);
+        console.log(bandsWithSongs);
+        expect(bandsWithMusicians.length).toBe(6);
+        expect(bandsWithSongs.length).toBe(6);
+
+    })
+    
  
 })
