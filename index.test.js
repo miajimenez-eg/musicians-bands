@@ -80,4 +80,26 @@ describe('Band and Musician Models', () => {
         selectMusician = await Musician.findByPk(newMusician.id);
         expect(selectMusician).toBeNull();
     })
+
+    test('can add multiple musicians to a band', async () => {
+        // create some bands
+        const newBand = await Band.create({name: 'Flo', genre: 'RnB', showCount: 52});
+        // get bands from db
+        const band4 = await Band.findByPk(4);
+        // create some musicians
+        const newMusician1 = await Musician.create({name: 'Stella Quaresma', instrument: 'Voice'});
+        const newMusician2 = await Musician.create({name: 'Jorja Douglas', instrument: 'Voice'});
+        const newMusician3 = await Musician.create({name: 'Renee Downer', instrument: 'Voice'});
+        // add musicians to band
+        await newBand.addMusician(newMusician1);
+        await newBand.addMusician(newMusician2);
+        await newBand.addMusician(newMusician3);
+        const bandWithMusicians = await Musician.findAll( { where: { bandId: 4 } });
+        // console.log(bandWithMusicians);
+        // console.log(newBand.id);
+        expect(bandWithMusicians[0].name).toBe('Stella Quaresma');
+        expect(bandWithMusicians[1].name).toBe('Jorja Douglas');
+        expect(bandWithMusicians[2].name).toBe('Renee Downer');
+        
+    })
 })
